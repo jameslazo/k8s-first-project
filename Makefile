@@ -1,5 +1,6 @@
 .PHONY: run_website teardown_website install_kind create_kind_cluster install_kubectl \
-	create_docker_registry
+	create_docker_registry connect_registry_to_kind_network connect_registry_to_kind \
+	create_kind_cluster_with_registry
 
 run_website:
 	docker build -t exploreca.com . && \
@@ -13,14 +14,23 @@ install_kind:
 		./kind --version
 
 create_kind_cluster: install_kind install_kubectl create_docker_registry
-	./kind create cluster --name exploreca.com && \
+	./kind create cluster --name exploreca.com --config ./kind_config.yml || true && \
 		kubectl get nodes
 
 install_kubectl:
-	snap install kubectl --classic
+	sudo snap install kubectl --classic
 
 create_docker_registry:
 	if docker ps | grep -q 'local-registry'; \
 	then echo "---> Local registry already running"; \
 	else docker run -d -p 5000:5000 --restart=always --name local-registry registry:2; \
 	fi
+
+connect_registry_to_kind_network:
+	docker network connect kind local-registry || true
+
+connect_registry_to_kind: connect_registry_to_kind_network
+	kubectl apply -f ./kind_configmap.yml
+
+create_kind_cluster_with_registry:
+	$(MAKE) create_kind_cluster && $(MAKE) connect_registry_to_kind
