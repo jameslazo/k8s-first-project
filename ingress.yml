@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: exploreca.com
+spec:
+  rules:
+  - host: exploreca.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: exploreca-svc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
