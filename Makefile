@@ -1,4 +1,4 @@
-.PHONY: run_website teardown_website
+.PHONY: run_website teardown_website install_kind
 
 run_website:
 	docker build -t exploreca.com . && \
@@ -6,3 +6,7 @@ run_website:
 
 teardown_website:
 	docker stop exploreca.com
+
+install_kind:
+	curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.26.0/kind-linux-amd64 && \
+		./kind --version
