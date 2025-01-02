@@ -1,2 +1,6 @@
 appName: exploreca-website
 imageName: localhost:5000/exploreca.com
+replicas: 1
+serviceName: exploreca-svc
+sourcePort: 80
+
